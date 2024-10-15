@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """task0 user.py"""
 
-from sqlalchemy import Column, Integer, String  # Import necessary types
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base
 
 
