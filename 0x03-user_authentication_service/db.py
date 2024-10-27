@@ -14,7 +14,7 @@ VALID_FIELDS = ['id', 'email', 'hashed_password', 'session_id', 'reset_token']
 
 
 class DB:
-    """DB class
+    """DB class to handle database operations
     """
 
     def __init__(self) -> None:
@@ -24,6 +24,7 @@ class DB:
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
+
 
     @property
     def _session(self) -> Session:
@@ -36,36 +37,62 @@ class DB:
 
     def add_user(self, email: str, hashed_password: str) -> User:
         """
-        Adds a new user to the Database.
+        Adds a new user to the Database and returns the User object.
         """
         if not email or not hashed_password:
-            return
+            raise ValueError("Email and hashed_password must be provided")
+
         user = User(email=email, hashed_password=hashed_password)
         session = self._session
-        session.add(user)
-        session.commit()
-        return user
+        try:
+            session.add(user)
+            session.commit()
+            return user
+        except Exception as e:
+            session.rollback()
+            print(f"An error occurred while adding the user: {e}")
+            raise
 
     def find_user_by(self, **kwargs) -> User:
         """
-        Finds a User in the Database.
+        Finds a User in the Database based on keyword arguments.
+        Raises NoResultFound if the user is not found.
         """
-        if not kwargs or any(x not in VALID_FIELDS for x in kwargs):
-            raise InvalidRequestError
+        if not kwargs:
+            raise InvalidRequestError("No search parameters provided")
+
+        if any(key not in VALID_FIELDS for key in kwargs):
+            raise InvalidRequestError("Invalid search parameters")
+
         session = self._session
         try:
             return session.query(User).filter_by(**kwargs).one()
-        except Exception:
-            raise NoResultFound
+        except NoResultFound:
+            raise NoResultFound("User not found with the specified parameters")
+        except Exception as e:
+            print(f"An error occurred during find_user_by: {e}")
+            raise
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """
-        updating a user in the database
+        Updates a user's attributes in the database.
+        Only fields listed in VALID_FIELDS can be updated.
         """
+        if not kwargs:
+            raise ValueError("No attributes provided to update")
+
         session = self._session
-        user = self.find_user_by(id=user_id)
-        for k, v in kwargs.items():
-            if k not in VALID_FIELDS:
-                raise ValueError
-            setattr(user, k, v)
-        session.commit()
+        try:
+            user = self.find_user_by(id=user_id)
+            for key, value in kwargs.items():
+                if key not in VALID_FIELDS:
+                    raise ValueError(f"{key} is not a valid field")
+                setattr(user, key, value)
+            session.commit()
+        except NoResultFound:
+            print(f"No user found with id {user_id}")
+            raise
+        except Exception as e:
+            session.rollback()
+            print(f"An error occurred while updating the user: {e}")
+            raise
