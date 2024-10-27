@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""task0 user.py"""
+"""
+User Module
+"""
 
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import declarative_base
-
 
 Base = declarative_base()
 
 
 class User(Base):
-    """defining user"""
+    """
+    User class
+    """
 
     __tablename__ = 'users'
 
@@ -20,5 +23,7 @@ class User(Base):
     reset_token = Column(String(250), nullable=True)
 
     def __repr__(self):
-        """defining string representation"""
+        """
+        String Rep
+        """
         return f"User: id={self.id}"
