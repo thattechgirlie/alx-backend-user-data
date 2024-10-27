@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""  auth task """
+""" Auth module """
 from flask import request
 from typing import List, TypeVar
 from models.user import User
+from os import getenv
 
 
 class Auth:
-    """ define class auth"""
+    """ class auth for authenticating users"""
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """ defining a function of class auth"""
+        """ require auth function that returns false"""
         if excluded_paths and path:
             if path[-1] == '/':
                 new_path = path[:-1]
@@ -33,7 +34,7 @@ class Auth:
             return True
 
     def authorization_header(self, request=None) -> str:
-        """ defining function for header authorization"""
+        """ authorization header"""
         if request is None:
             return None
         authorization = request.headers.get('Authorization')
@@ -42,6 +43,14 @@ class Auth:
         else:
             return authorization
 
-    def current_user(self, request=None) -> TypeVar('User'): # type: ignore
-        """ define function for current user"""
+    def current_user(self, request=None) -> TypeVar('User'):
+        """ return current user else None"""
         return None
+
+    def session_cookie(self, request=None):
+        """ Returns request cookie value """
+        if request is None:
+            return None
+        cookie = getenv('SESSION_NAME')
+        return request.cookies.get(cookie)
+    
