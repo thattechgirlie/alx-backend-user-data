@@ -31,7 +31,7 @@ class BasicAuth(Auth):
             return None
         else:
             return header_array[1]
-       
+   
     def decode_base64_authorization_header(
             self, base64_authorization_header: str) -> str:
         """
@@ -47,7 +47,7 @@ class BasicAuth(Auth):
                 return None
 
     def extract_user_credentials(
-            self, decoded_base64_authorization_header: str) -> (str, str): # type: ignore
+        self, decoded_base64_authorization_header: str) -> (str, str):
         """
         function to extract_user_credentials
         """
@@ -58,7 +58,7 @@ class BasicAuth(Auth):
             return (res[0], res[1])
         return (None, None)
 
-    def current_user(self, request=None) -> TypeVar('User'): # type: ignore
+    def current_user(self, request=None) -> TypeVar('User'):   # type: ignore
         """ define current user"""
 
         Auth_header = self.authorization_header(request)
@@ -72,8 +72,8 @@ class BasicAuth(Auth):
                         return self.user_object_from_credentials(email, pword)
         return
 
-    def user_object_from_credentials(self, user_email: str,
-                                     user_pwd: str) -> TypeVar('User'): # type: ignore
+    def user_object_from_credentials(self, user_email: str,user_pwd:
+        str) -> TypeVar('User'):   # type: ignore
         """
         define user_object_from_credentials
         """

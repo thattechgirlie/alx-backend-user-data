@@ -42,6 +42,6 @@ class Auth:
         else:
             return authorization
 
-    def current_user(self, request=None) -> TypeVar('User'): # type: ignore
+    def current_user(self, request=None) -> TypeVar('User'):   # type: ignore
         """ define function for current user"""
         return None
